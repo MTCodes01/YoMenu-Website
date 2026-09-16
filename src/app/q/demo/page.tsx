@@ -2,132 +2,234 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Search } from "lucide-react";
-import { Space_Mono } from "next/font/google";
-import { menuCategories, menuItems, restaurantData } from "@/lib/mockData";
-
-const spaceMono = Space_Mono({ 
-  weight: ['400', '700'],
-  subsets: ['latin'],
-  variable: '--font-space-mono',
-});
+import { 
+  Search,
+  MapPin,
+  MenuSquare,
+  Bookmark,
+  Store,
+  Tag,
+  Star
+} from "lucide-react";
+import { 
+  restaurantData, 
+  menuCategories, 
+  menuItems
+} from "@/lib/mockData";
 
 export default function CustomerMenuPage() {
-  const [activeCategory, setActiveCategory] = useState<string>("All");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState(menuCategories[0].id);
   const [dietaryFilter, setDietaryFilter] = useState<"all" | "veg" | "non-veg">("all");
 
-  const categories = [{ id: "All", name: "All", icon: "" }, ...menuCategories];
-
-  // Filtering
-  let filteredItems = menuItems;
-  
-  if (activeCategory !== "All") {
-    filteredItems = filteredItems.filter(item => item.category === activeCategory);
-  }
-
-  if (searchQuery) {
-    filteredItems = filteredItems.filter(item => 
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }
-
-  if (dietaryFilter === "veg") {
-    filteredItems = filteredItems.filter(item => item.isVeg);
-  } else if (dietaryFilter === "non-veg") {
-    filteredItems = filteredItems.filter(item => !item.isVeg);
-  }
+  const scrollToCategory = (id: string) => {
+    setActiveCategory(id);
+    const element = document.getElementById(id);
+    if (element) {
+      // Offset for sticky headers
+      const y = element.getBoundingClientRect().top + window.scrollY - 130;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
 
   return (
-    <div className={`${spaceMono.variable} font-mono bg-white text-black min-h-screen pb-12 p-4 md:max-w-3xl md:mx-auto md:border-x`}>
+    <div className="bg-[#f8f9fa] text-[#191c1d] min-h-screen pb-24 font-sans selection:bg-orange-200 selection:text-orange-900 md:max-w-md md:mx-auto md:border-x md:shadow-xl relative">
       
-      {/* Search Bar */}
-      <div className="relative mb-6 mt-2">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input 
-          type="text" 
-          placeholder="Search in Menu"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-12 pr-4 py-3.5 rounded-full border border-gray-200 outline-none focus:border-[#133F31] transition-colors text-sm"
-        />
-      </div>
+      {/* TopAppBar */}
+      <header className="sticky top-0 w-full z-40 bg-white/90 backdrop-blur-md shadow-sm">
+        <div className="flex justify-between items-center w-full px-5 py-3 mx-auto">
+          <div className="flex items-center gap-3">
+            <button aria-label="Menu list" className="text-orange-600 hover:bg-gray-100 transition-colors active:scale-95 duration-150 p-1.5 rounded-full flex items-center justify-center">
+              <MenuSquare className="w-5 h-5" />
+            </button>
+            <span className="text-lg font-bold tracking-tight">{restaurantData.name}</span>
+          </div>
+          <div className="flex items-center">
+            <button aria-label="Search" className="text-orange-600 hover:bg-gray-100 transition-colors active:scale-95 duration-150 p-1.5 rounded-full flex items-center justify-center">
+              <Search className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </header>
 
-      {/* Category Chips */}
-      <div className="flex flex-wrap gap-2.5 mb-5">
-        {categories.map(cat => (
-          <button
-            key={cat.id}
-            onClick={() => setActiveCategory(cat.id)}
-            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors border ${
-              activeCategory === cat.id 
-                ? "bg-[#133F31] text-white border-[#133F31]" 
-                : "bg-white text-black border-gray-200 hover:border-gray-300"
-            }`}
-          >
-            {cat.name}
-          </button>
-        ))}
-      </div>
+      {/* Hero / Branch Identity Banner */}
+      <section className="px-5 pt-4 pb-2">
+        <div className="bg-white rounded-xl p-4 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-gray-200">
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="w-2 h-2 rounded-full bg-green-600 animate-pulse"></span>
+                <span className="text-xs text-green-600 font-semibold tracking-wide">Open Now • Until {restaurantData.openUntil}</span>
+              </div>
+              <h1 className="text-xl font-bold tracking-tight mt-1">Artisan Indian Dining</h1>
+              <p className="text-sm text-gray-500 mt-0.5 line-clamp-1">{restaurantData.description}</p>
+            </div>
+            <div className="bg-gray-50 px-2.5 py-1.5 rounded-lg flex flex-col items-center border border-gray-200 shrink-0 ml-4">
+              <span className="text-sm text-orange-600 font-bold">Dine-In</span>
+              <span className="text-xs text-gray-500">Table 14</span>
+            </div>
+          </div>
+          <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-gray-500">
+            <div className="flex items-center gap-1.5">
+              <MapPin className="w-4 h-4 text-orange-600" />
+              <span className="text-xs line-clamp-1 text-gray-600">{restaurantData.address}</span>
+            </div>
+            {/* Ratings removed */}
+          </div>
+        </div>
+      </section>
 
-      {/* Dietary Filter (Subtle secondary filter) */}
-      <div className="flex gap-2 mb-6">
+      {/* Sticky Category Navigation Bar */}
+      <nav className="sticky top-[60px] z-30 bg-white/90 backdrop-blur-md py-3 px-5 shadow-sm">
+        <div className="flex items-center gap-2 overflow-x-auto py-0.5" style={{ scrollbarWidth: 'none' }}>
+          {menuCategories.map((category) => (
+            <button 
+              key={category.id}
+              onClick={() => scrollToCategory(category.id)}
+              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all active:scale-95 duration-150 ${
+                activeCategory === category.id 
+                  ? 'bg-orange-600 text-white shadow-sm' 
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      {/* Dietary Filter */}
+      <div className="px-5 py-2.5 flex gap-2 bg-[#f8f9fa]">
         <button 
           onClick={() => setDietaryFilter('all')}
-          className={`px-3 py-1 rounded-full text-[10px] font-bold border transition-colors ${dietaryFilter === 'all' ? 'bg-gray-100 border-gray-300 text-black' : 'bg-white border-gray-100 text-gray-400 hover:border-gray-200'}`}
+          className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${dietaryFilter === 'all' ? 'bg-gray-200 border-gray-300 text-gray-900 shadow-sm' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
         >
-          All Diet
+          All
         </button>
         <button 
           onClick={() => setDietaryFilter('veg')}
-          className={`px-3 py-1 rounded-full text-[10px] font-bold border transition-colors ${dietaryFilter === 'veg' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-white border-gray-100 text-gray-400 hover:border-gray-200'}`}
+          className={`px-3 py-1 rounded-full text-xs font-semibold border flex items-center gap-1.5 transition-colors ${dietaryFilter === 'veg' ? 'bg-green-50 border-green-200 text-green-800 shadow-sm' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
         >
-          Veg Only
+          <span className="w-[10px] h-[10px] rounded-[2px] border border-green-600 flex items-center justify-center p-[1.5px]">
+            <span className="w-[4px] h-[4px] rounded-full bg-green-600"></span>
+          </span>
+          Veg
         </button>
         <button 
           onClick={() => setDietaryFilter('non-veg')}
-          className={`px-3 py-1 rounded-full text-[10px] font-bold border transition-colors ${dietaryFilter === 'non-veg' ? 'bg-red-50 border-red-200 text-red-800' : 'bg-white border-gray-100 text-gray-400 hover:border-gray-200'}`}
+          className={`px-3 py-1 rounded-full text-xs font-semibold border flex items-center gap-1.5 transition-colors ${dietaryFilter === 'non-veg' ? 'bg-red-50 border-red-200 text-red-800 shadow-sm' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
         >
-          Non-Veg Only
+          <span className="w-[10px] h-[10px] rounded-[2px] border border-red-700 flex items-center justify-center p-[1.5px]">
+            <span className="w-[4px] h-[4px] rounded-full bg-red-700"></span>
+          </span>
+          Non-Veg
         </button>
       </div>
 
-      {/* Items Count & Swipe indicator */}
-      <div className="flex justify-between items-center text-[10px] text-gray-400 mb-4 px-1 tracking-widest uppercase">
-        <span>{filteredItems.length} items</span>
-        <span className="flex items-center gap-1">
-          &lt; Swipe for more &gt;
-        </span>
-      </div>
+      {/* Categories & Items Grid */}
+      <div className="pb-12">
+        {menuCategories.map((category) => {
+          let categoryItems = menuItems.filter(item => item.category === category.id);
+          if (dietaryFilter === 'veg') categoryItems = categoryItems.filter(item => item.isVeg);
+          if (dietaryFilter === 'non-veg') categoryItems = categoryItems.filter(item => !item.isVeg);
+          
+          if (categoryItems.length === 0) return null;
 
-      {/* Item List */}
-      <div className="flex flex-col gap-4">
-        {filteredItems.length > 0 ? (
-          filteredItems.map(item => (
-            <div key={item.id} className="border border-gray-200 rounded-3xl p-5 flex justify-between gap-4 bg-white hover:border-gray-300 transition-colors">
-              <div className="flex flex-col max-w-[65%]">
-                <h3 className="text-[17px] font-bold text-black mb-1.5 leading-tight">{item.name}</h3>
-                <div className="text-[20px] font-bold text-[#133F31] mb-2">{item.price} {restaurantData.currencySymbol}</div>
-                <p className="text-[11px] text-gray-400 mt-auto line-clamp-2 leading-relaxed">{item.description}</p>
-              </div>
-              <div className="relative w-24 h-24 shrink-0 rounded-[1.25rem] overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
-                <Image 
-                  src={item.image}
-                  alt={item.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
+          return (
+            <div key={category.id} id={category.id} className="pt-4">
+              {/* Section Heading */}
+              <section className="px-5 pb-2">
+                <div className="flex items-baseline justify-between">
+                  <h2 className="text-[19px] font-bold text-gray-900 tracking-tight">{category.name}</h2>
+                  <span className="text-xs text-gray-500 font-medium">({categoryItems.length} items)</span>
+                </div>
+              </section>
+
+              {/* 2-Column Responsive Menu Grid */}
+              <section className="grid grid-cols-2 gap-3 px-4 pt-1">
+                {categoryItems.map(item => (
+                  <MenuItemCard key={item.id} item={item} />
+                ))}
+              </section>
             </div>
-          ))
-        ) : (
-          <div className="text-center py-16 text-gray-400 text-sm">
-            No items found matching your filters.
-          </div>
-        )}
+          );
+        })}
       </div>
 
+      {/* Bottom Nav Bar */}
+      <nav className="fixed bottom-0 left-0 w-full z-50 md:max-w-md md:left-1/2 md:-translate-x-1/2 flex justify-around items-center px-2 py-2 pb-safe bg-white/95 backdrop-blur-md rounded-t-xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)] border-t border-gray-100">
+        <div className="w-full flex justify-around items-center">
+          <button className="flex flex-col items-center justify-center text-orange-600 font-bold py-1.5 px-4 rounded-full bg-orange-50 active:scale-95 transition-transform duration-150">
+            <MenuSquare className="w-5 h-5 fill-orange-100 text-orange-600" />
+            <span className="text-[10px] mt-1 font-bold">Menu</span>
+          </button>
+          <button className="flex flex-col items-center justify-center text-gray-500 hover:text-orange-600 transition-colors py-1.5 px-4 active:scale-95 duration-150">
+            <Tag className="w-5 h-5" />
+            <span className="text-[10px] mt-1 font-medium">Specials</span>
+          </button>
+          <button className="flex flex-col items-center justify-center text-gray-500 hover:text-orange-600 transition-colors py-1.5 px-4 active:scale-95 duration-150">
+            <Store className="w-5 h-5" />
+            <span className="text-[10px] mt-1 font-medium">Info</span>
+          </button>
+          <button className="flex flex-col items-center justify-center text-gray-500 hover:text-orange-600 transition-colors py-1.5 px-4 active:scale-95 duration-150">
+            <Bookmark className="w-5 h-5" />
+            <span className="text-[10px] mt-1 font-medium">Saved</span>
+          </button>
+        </div>
+      </nav>
     </div>
+  );
+}
+
+function MenuItemCard({ item }: { item: typeof menuItems[0] }) {
+
+  return (
+    <article className="bg-white rounded-xl p-2.5 shadow-[0_4px_16px_rgba(0,0,0,0.04)] border border-gray-100 flex flex-col justify-between hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all duration-200 group">
+      <div>
+        <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-gray-50">
+          <Image 
+            src={item.image} 
+            alt={item.name} 
+            fill 
+            className="object-cover group-hover:scale-105 transition-transform duration-500" 
+          />
+          {item.isPopular && (
+            <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-white bg-orange-600 text-[10px] leading-tight font-bold tracking-wide shadow-sm">
+              Popular
+            </span>
+          )}
+        </div>
+        
+        {/* Dietary & Rating Row */}
+        <div className="flex items-center justify-between mt-2.5 mb-1.5">
+          {item.isVeg ? (
+            <div className="flex items-center gap-1.5">
+              <span className="w-[14px] h-[14px] rounded-[3px] border border-green-600 flex items-center justify-center p-[2px]">
+                <span className="w-[6px] h-[6px] rounded-full bg-green-600"></span>
+              </span>
+              <span className="text-green-700 text-[10px] font-bold uppercase tracking-wider">Veg</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <span className="w-[14px] h-[14px] rounded-[3px] border border-red-700 flex items-center justify-center p-[2px]">
+                <span className="w-[6px] h-[6px] rounded-full bg-red-700"></span>
+              </span>
+              <span className="text-red-700 text-[10px] font-bold uppercase tracking-wider">Non-Veg</span>
+            </div>
+          )}
+
+          {/* Rating removed */}
+        </div>
+
+        {/* Item Details */}
+        <h3 className="text-[14px] leading-snug font-bold text-gray-900 group-hover:text-orange-600 transition-colors">{item.name}</h3>
+        <p className="text-[11px] text-gray-500 mt-1 line-clamp-1">{item.description}</p>
+      </div>
+
+      {/* Price Display */}
+      <div className="flex items-baseline gap-1.5 mt-3 pt-2 border-t border-gray-100/80">
+        <span className="text-[15px] font-bold text-orange-600 tabular-nums">{restaurantData.currencySymbol}{item.price}</span>
+        <span className="text-[11px] text-gray-400 line-through tabular-nums">{restaurantData.currencySymbol}{Math.round(item.price * 1.2)}</span>
+      </div>
+    </article>
   );
 }
