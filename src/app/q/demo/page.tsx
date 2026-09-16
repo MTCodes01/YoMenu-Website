@@ -4,12 +4,8 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { 
   Search,
-  MapPin,
   MenuSquare,
-  Bookmark,
-  Store,
-  Tag,
-  Star
+  Store
 } from "lucide-react";
 import { 
   restaurantData, 
@@ -18,218 +14,164 @@ import {
 } from "@/lib/mockData";
 
 export default function CustomerMenuPage() {
-  const [activeCategory, setActiveCategory] = useState(menuCategories[0].id);
+  const [activeCategory, setActiveCategory] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const [dietaryFilter, setDietaryFilter] = useState<"all" | "veg" | "non-veg">("all");
 
-  const scrollToCategory = (id: string) => {
-    setActiveCategory(id);
-    const element = document.getElementById(id);
-    if (element) {
-      // Offset for sticky headers
-      const y = element.getBoundingClientRect().top + window.scrollY - 130;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-  };
+  const categories = [{ id: "All", name: "All" }, ...menuCategories];
+
+  // Filtering
+  let filteredItems = menuItems;
+  
+  if (activeCategory !== "All") {
+    filteredItems = filteredItems.filter(item => item.category === activeCategory);
+  }
+
+  if (searchQuery) {
+    filteredItems = filteredItems.filter(item => 
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }
+
+  if (dietaryFilter === "veg") {
+    filteredItems = filteredItems.filter(item => item.isVeg);
+  } else if (dietaryFilter === "non-veg") {
+    filteredItems = filteredItems.filter(item => !item.isVeg);
+  }
 
   return (
-    <div className="bg-[#f8f9fa] text-[#191c1d] min-h-screen pb-24 font-sans selection:bg-orange-200 selection:text-orange-900 md:max-w-md md:mx-auto md:border-x md:shadow-xl relative">
+    <div className="bg-white text-gray-900 min-h-screen pb-24 md:max-w-md md:mx-auto md:border-x md:shadow-xl relative font-sans selection:bg-orange-200 selection:text-orange-900">
       
-      {/* TopAppBar */}
-      <header className="sticky top-0 w-full z-40 bg-white/90 backdrop-blur-md shadow-sm">
-        <div className="flex justify-between items-center w-full px-5 py-3 mx-auto">
-          <div className="flex items-center gap-3">
-            <button aria-label="Menu list" className="text-orange-600 hover:bg-gray-100 transition-colors active:scale-95 duration-150 p-1.5 rounded-full flex items-center justify-center">
-              <MenuSquare className="w-5 h-5" />
-            </button>
-            <span className="text-lg font-bold tracking-tight">{restaurantData.name}</span>
-          </div>
-          <div className="flex items-center">
-            <button aria-label="Search" className="text-orange-600 hover:bg-gray-100 transition-colors active:scale-95 duration-150 p-1.5 rounded-full flex items-center justify-center">
-              <Search className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </header>
+      {/* Header */}
+      <div className="pt-8 px-5 pb-2">
+        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">{restaurantData.name}</h1>
+        <p className="text-sm text-gray-500 mt-1 font-medium">{restaurantData.description}</p>
+      </div>
 
-      {/* Hero / Branch Identity Banner */}
-      <section className="px-5 pt-4 pb-2">
-        <div className="bg-white rounded-xl p-4 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-gray-200">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="w-2 h-2 rounded-full bg-green-600 animate-pulse"></span>
-                <span className="text-xs text-green-600 font-semibold tracking-wide">Open Now • Until {restaurantData.openUntil}</span>
-              </div>
-              <h1 className="text-xl font-bold tracking-tight mt-1">Artisan Indian Dining</h1>
-              <p className="text-sm text-gray-500 mt-0.5 line-clamp-1">{restaurantData.description}</p>
-            </div>
-            <div className="bg-gray-50 px-2.5 py-1.5 rounded-lg flex flex-col items-center border border-gray-200 shrink-0 ml-4">
-              <span className="text-sm text-orange-600 font-bold">Dine-In</span>
-              <span className="text-xs text-gray-500">Table 14</span>
-            </div>
-          </div>
-          <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-gray-500">
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-orange-600" />
-              <span className="text-xs line-clamp-1 text-gray-600">{restaurantData.address}</span>
-            </div>
-            {/* Ratings removed */}
-          </div>
+      {/* Search Bar */}
+      <div className="px-5 mb-6 mt-4">
+        <div className="relative">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input 
+            type="text" 
+            placeholder="Search in Menu"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-4 py-3.5 rounded-full border border-gray-200 bg-gray-50 outline-none focus:border-orange-500 focus:bg-white focus:ring-4 focus:ring-orange-500/10 transition-all text-sm font-medium shadow-sm"
+          />
         </div>
-      </section>
+      </div>
 
-      {/* Sticky Category Navigation Bar */}
-      <nav className="sticky top-[60px] z-30 bg-white/90 backdrop-blur-md py-3 px-5 shadow-sm">
-        <div className="flex items-center gap-2 overflow-x-auto py-0.5" style={{ scrollbarWidth: 'none' }}>
-          {menuCategories.map((category) => (
-            <button 
-              key={category.id}
-              onClick={() => scrollToCategory(category.id)}
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-[13px] font-semibold transition-all active:scale-95 duration-150 ${
-                activeCategory === category.id 
-                  ? 'bg-orange-600 text-white shadow-sm' 
-                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-      </nav>
+      {/* Category Chips (Wrapping) */}
+      <div className="px-5 flex flex-wrap gap-2.5 mb-5">
+        {categories.map(cat => (
+          <button
+            key={cat.id}
+            onClick={() => setActiveCategory(cat.id)}
+            className={`px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 border ${
+              activeCategory === cat.id 
+                ? "bg-orange-600 text-white border-orange-600 shadow-md shadow-orange-600/25 scale-[1.02]" 
+                : "bg-white text-gray-600 border-gray-200 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
+            }`}
+          >
+            {cat.name}
+          </button>
+        ))}
+      </div>
 
       {/* Dietary Filter */}
-      <div className="px-5 py-2.5 flex gap-2 bg-[#f8f9fa]">
+      <div className="px-5 flex gap-2 mb-6">
         <button 
           onClick={() => setDietaryFilter('all')}
-          className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${dietaryFilter === 'all' ? 'bg-gray-200 border-gray-300 text-gray-900 shadow-sm' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+          className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-colors ${dietaryFilter === 'all' ? 'bg-gray-800 border-gray-800 text-white' : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'}`}
         >
           All
         </button>
         <button 
           onClick={() => setDietaryFilter('veg')}
-          className={`px-3 py-1 rounded-full text-xs font-semibold border flex items-center gap-1.5 transition-colors ${dietaryFilter === 'veg' ? 'bg-green-50 border-green-200 text-green-800 shadow-sm' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+          className={`px-3 py-1.5 rounded-full text-[11px] font-bold border flex items-center gap-1.5 transition-colors ${dietaryFilter === 'veg' ? 'bg-green-600 border-green-600 text-white' : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'}`}
         >
-          <span className="w-[10px] h-[10px] rounded-[2px] border border-green-600 flex items-center justify-center p-[1.5px]">
-            <span className="w-[4px] h-[4px] rounded-full bg-green-600"></span>
-          </span>
-          Veg
+          <span className={`w-2 h-2 rounded-full ${dietaryFilter === 'veg' ? 'bg-white' : 'bg-green-600'}`}></span> Veg
         </button>
         <button 
           onClick={() => setDietaryFilter('non-veg')}
-          className={`px-3 py-1 rounded-full text-xs font-semibold border flex items-center gap-1.5 transition-colors ${dietaryFilter === 'non-veg' ? 'bg-red-50 border-red-200 text-red-800 shadow-sm' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+          className={`px-3 py-1.5 rounded-full text-[11px] font-bold border flex items-center gap-1.5 transition-colors ${dietaryFilter === 'non-veg' ? 'bg-red-600 border-red-600 text-white' : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'}`}
         >
-          <span className="w-[10px] h-[10px] rounded-[2px] border border-red-700 flex items-center justify-center p-[1.5px]">
-            <span className="w-[4px] h-[4px] rounded-full bg-red-700"></span>
-          </span>
-          Non-Veg
+          <span className={`w-2 h-2 rounded-full ${dietaryFilter === 'non-veg' ? 'bg-white' : 'bg-red-600'}`}></span> Non-Veg
         </button>
       </div>
 
-      {/* Categories & Items Grid */}
-      <div className="pb-12">
-        {menuCategories.map((category) => {
-          let categoryItems = menuItems.filter(item => item.category === category.id);
-          if (dietaryFilter === 'veg') categoryItems = categoryItems.filter(item => item.isVeg);
-          if (dietaryFilter === 'non-veg') categoryItems = categoryItems.filter(item => !item.isVeg);
-          
-          if (categoryItems.length === 0) return null;
+      <hr className="border-gray-100 mx-5 mb-5" />
 
-          return (
-            <div key={category.id} id={category.id} className="pt-4">
-              {/* Section Heading */}
-              <section className="px-5 pb-2">
-                <div className="flex items-baseline justify-between">
-                  <h2 className="text-[19px] font-bold text-gray-900 tracking-tight">{category.name}</h2>
-                  <span className="text-xs text-gray-500 font-medium">({categoryItems.length} items)</span>
-                </div>
-              </section>
-
-              {/* 2-Column Responsive Menu Grid */}
-              <section className="grid grid-cols-2 gap-3 px-4 pt-1">
-                {categoryItems.map(item => (
-                  <MenuItemCard key={item.id} item={item} />
-                ))}
-              </section>
-            </div>
-          );
-        })}
+      {/* Items Count */}
+      <div className="px-5 flex justify-between items-center text-xs text-gray-400 mb-4 font-bold uppercase tracking-wider">
+        <span>{filteredItems.length} items</span>
       </div>
 
-      {/* Bottom Nav Bar */}
-      <nav className="fixed bottom-0 left-0 w-full z-50 md:max-w-md md:left-1/2 md:-translate-x-1/2 flex justify-around items-center px-2 py-2 pb-safe bg-white/95 backdrop-blur-md rounded-t-xl shadow-[0_-4px_20px_rgba(0,0,0,0.08)] border-t border-gray-100">
-        <div className="w-full flex justify-around items-center">
-          <button className="flex flex-col items-center justify-center text-orange-600 font-bold py-1.5 px-4 rounded-full bg-orange-50 active:scale-95 transition-transform duration-150">
-            <MenuSquare className="w-5 h-5 fill-orange-100 text-orange-600" />
-            <span className="text-[10px] mt-1 font-bold">Menu</span>
-          </button>
-          <button className="flex flex-col items-center justify-center text-gray-500 hover:text-orange-600 transition-colors py-1.5 px-4 active:scale-95 duration-150">
-            <Tag className="w-5 h-5" />
-            <span className="text-[10px] mt-1 font-medium">Specials</span>
-          </button>
-          <button className="flex flex-col items-center justify-center text-gray-500 hover:text-orange-600 transition-colors py-1.5 px-4 active:scale-95 duration-150">
-            <Store className="w-5 h-5" />
-            <span className="text-[10px] mt-1 font-medium">Info</span>
-          </button>
-          <button className="flex flex-col items-center justify-center text-gray-500 hover:text-orange-600 transition-colors py-1.5 px-4 active:scale-95 duration-150">
-            <Bookmark className="w-5 h-5" />
-            <span className="text-[10px] mt-1 font-medium">Saved</span>
-          </button>
-        </div>
+      {/* Item List (Horizontal Cards) */}
+      <div className="px-5 flex flex-col gap-4">
+        {filteredItems.length > 0 ? (
+          filteredItems.map(item => (
+            <div key={item.id} className="border border-gray-100 rounded-[28px] p-4 flex justify-between gap-4 bg-white shadow-sm hover:shadow-lg hover:border-orange-100 transition-all duration-300 group">
+              <div className="flex flex-col max-w-[62%]">
+                <h3 className="text-[17px] font-bold text-gray-900 mb-1 leading-tight group-hover:text-orange-600 transition-colors">{item.name}</h3>
+                <div className="text-[18px] font-extrabold text-orange-600 mb-2 tabular-nums">
+                  {restaurantData.currencySymbol}{item.price}
+                </div>
+                
+                <p className="text-[13px] text-gray-500 mt-auto line-clamp-2 leading-relaxed mb-3">
+                  {item.description}
+                </p>
+
+                {/* Dietary Indicator */}
+                <div className="mt-auto flex">
+                  {item.isVeg ? (
+                    <div className="flex items-center gap-1.5 bg-green-50 px-2 py-0.5 rounded text-[10px] font-bold text-green-700 border border-green-100 uppercase tracking-wider">
+                      Veg
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5 bg-red-50 px-2 py-0.5 rounded text-[10px] font-bold text-red-700 border border-red-100 uppercase tracking-wider">
+                      Non-Veg
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="relative w-[110px] h-[110px] shrink-0 rounded-[20px] overflow-hidden bg-gray-50 shadow-sm border border-gray-100">
+                <Image 
+                  src={item.image}
+                  alt={item.name}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                {item.isPopular && (
+                  <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-white bg-orange-600 text-[9px] leading-tight font-bold tracking-wide shadow-sm uppercase">
+                    Popular
+                  </span>
+                )}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-16 text-gray-400 text-sm flex flex-col items-center">
+            <Search className="w-8 h-8 mb-3 opacity-20" />
+            No items found matching your filters.
+          </div>
+        )}
+      </div>
+
+      {/* Futuristic Floating Bottom Nav */}
+      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 p-1.5 bg-black/85 backdrop-blur-xl rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/15 supports-[backdrop-filter]:bg-black/60">
+        <button className="flex items-center justify-center gap-2.5 py-2.5 px-6 rounded-full bg-white/20 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:bg-white/30 transition-all duration-300 active:scale-95">
+          <MenuSquare className="w-4 h-4 text-white" />
+          <span className="text-[11px] font-bold tracking-wider uppercase">Home</span>
+        </button>
+        <button className="flex items-center justify-center gap-2.5 py-2.5 px-6 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-all duration-300 active:scale-95">
+          <Store className="w-4 h-4" />
+          <span className="text-[11px] font-bold tracking-wider uppercase">About</span>
+        </button>
       </nav>
     </div>
-  );
-}
-
-function MenuItemCard({ item }: { item: typeof menuItems[0] }) {
-
-  return (
-    <article className="bg-white rounded-xl p-2.5 shadow-[0_4px_16px_rgba(0,0,0,0.04)] border border-gray-100 flex flex-col justify-between hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all duration-200 group">
-      <div>
-        <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-gray-50">
-          <Image 
-            src={item.image} 
-            alt={item.name} 
-            fill 
-            className="object-cover group-hover:scale-105 transition-transform duration-500" 
-          />
-          {item.isPopular && (
-            <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-white bg-orange-600 text-[10px] leading-tight font-bold tracking-wide shadow-sm">
-              Popular
-            </span>
-          )}
-        </div>
-        
-        {/* Dietary & Rating Row */}
-        <div className="flex items-center justify-between mt-2.5 mb-1.5">
-          {item.isVeg ? (
-            <div className="flex items-center gap-1.5">
-              <span className="w-[14px] h-[14px] rounded-[3px] border border-green-600 flex items-center justify-center p-[2px]">
-                <span className="w-[6px] h-[6px] rounded-full bg-green-600"></span>
-              </span>
-              <span className="text-green-700 text-[10px] font-bold uppercase tracking-wider">Veg</span>
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5">
-              <span className="w-[14px] h-[14px] rounded-[3px] border border-red-700 flex items-center justify-center p-[2px]">
-                <span className="w-[6px] h-[6px] rounded-full bg-red-700"></span>
-              </span>
-              <span className="text-red-700 text-[10px] font-bold uppercase tracking-wider">Non-Veg</span>
-            </div>
-          )}
-
-          {/* Rating removed */}
-        </div>
-
-        {/* Item Details */}
-        <h3 className="text-[14px] leading-snug font-bold text-gray-900 group-hover:text-orange-600 transition-colors">{item.name}</h3>
-        <p className="text-[11px] text-gray-500 mt-1 line-clamp-1">{item.description}</p>
-      </div>
-
-      {/* Price Display */}
-      <div className="flex items-baseline gap-1.5 mt-3 pt-2 border-t border-gray-100/80">
-        <span className="text-[15px] font-bold text-orange-600 tabular-nums">{restaurantData.currencySymbol}{item.price}</span>
-        <span className="text-[11px] text-gray-400 line-through tabular-nums">{restaurantData.currencySymbol}{Math.round(item.price * 1.2)}</span>
-      </div>
-    </article>
   );
 }
