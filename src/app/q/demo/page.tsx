@@ -141,19 +141,13 @@ export default function CustomerMenuPage() {
       {/* Dietary Filter */}
       <div className="px-5 flex gap-2 mb-6">
         <button 
-          onClick={() => setDietaryFilter('all')}
-          className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-colors ${dietaryFilter === 'all' ? 'bg-gray-800 border-gray-800 text-white' : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'}`}
-        >
-          All
-        </button>
-        <button 
-          onClick={() => setDietaryFilter('veg')}
+          onClick={() => setDietaryFilter(prev => prev === 'veg' ? 'all' : 'veg')}
           className={`px-3 py-1.5 rounded-full text-[11px] font-bold border flex items-center gap-1.5 transition-colors ${dietaryFilter === 'veg' ? 'bg-green-600 border-green-600 text-white' : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'}`}
         >
           <span className={`w-2 h-2 rounded-full ${dietaryFilter === 'veg' ? 'bg-white' : 'bg-green-600'}`}></span> Veg
         </button>
         <button 
-          onClick={() => setDietaryFilter('non-veg')}
+          onClick={() => setDietaryFilter(prev => prev === 'non-veg' ? 'all' : 'non-veg')}
           className={`px-3 py-1.5 rounded-full text-[11px] font-bold border flex items-center gap-1.5 transition-colors ${dietaryFilter === 'non-veg' ? 'bg-red-600 border-red-600 text-white' : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'}`}
         >
           <span className={`w-2 h-2 rounded-full ${dietaryFilter === 'non-veg' ? 'bg-white' : 'bg-red-600'}`}></span> Non-Veg
