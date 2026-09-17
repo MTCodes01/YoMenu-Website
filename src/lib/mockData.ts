@@ -90,7 +90,7 @@ export const menuItems: MenuItem[] = [
     name: "Kerala Beef Fry",
     description: "Slow-roasted beef with coconut slices, curry leaves, and traditional Kerala spices.",
     price: 320,
-    image: "https://images.unsplash.com/photo-1606471191009-63994c53433b?auto=format&fit=crop&w=300&h=300&q=80",
+    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=300&h=300&q=80",
     category: "cat-1",
     isVeg: false,
     isPopular: true,
@@ -123,7 +123,7 @@ export const menuItems: MenuItem[] = [
     name: "Paneer Butter Masala",
     description: "Soft paneer cubes simmered in a rich and creamy tomato-based gravy.",
     price: 250,
-    image: "https://images.unsplash.com/photo-1631452180519-c014fe946bc0?auto=format&fit=crop&w=300&h=300&q=80",
+    image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&h=300&q=80",
     category: "cat-3",
     isVeg: true,
     isPopular: true,
@@ -153,7 +153,7 @@ export const menuItems: MenuItem[] = [
     name: "Payasam",
     description: "Traditional South Indian dessert made with jaggery, coconut milk, and rice flakes.",
     price: 150,
-    image: "https://images.unsplash.com/photo-1605658607902-6014e82b3d36?auto=format&fit=crop&w=300&h=300&q=80",
+    image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=300&h=300&q=80",
     category: "cat-5",
     isVeg: true,
     isPopular: false,
@@ -163,10 +163,52 @@ export const menuItems: MenuItem[] = [
     name: "Fresh Lime Soda",
     description: "Refreshing sweet and salty lime soda.",
     price: 80,
-    image: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=300&h=300&q=80",
+    image: "https://images.unsplash.com/photo-1536935338788-846bb9981813?auto=format&fit=crop&w=300&h=300&q=80",
     category: "cat-6",
     isVeg: true,
     isPopular: false,
+  },
+  {
+    id: "item-9",
+    name: "Ghee Roast Dosa",
+    description: "Crispy paper-thin crepe roasted with clarified butter, served with sambar.",
+    price: 110,
+    image: "https://images.unsplash.com/photo-1589301760014-d929f39ce9b1?auto=format&fit=crop&w=300&h=300&q=80",
+    category: "cat-1",
+    isVeg: true,
+    isPopular: true,
+  },
+  {
+    id: "item-10",
+    name: "Fish Curry Meals",
+    description: "Traditional Kerala meals served on a banana leaf with seer fish curry.",
+    price: 220,
+    image: "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=300&h=300&q=80",
+    category: "cat-3",
+    isVeg: false,
+    isPopular: true,
+    spicyLevel: 2,
+  },
+  {
+    id: "item-11",
+    name: "Mango Lassi",
+    description: "Sweet and creamy yogurt-based drink flavored with fresh ripe mangoes.",
+    price: 90,
+    image: "https://images.unsplash.com/photo-1550461716-ba455913e61c?auto=format&fit=crop&w=300&h=300&q=80",
+    category: "cat-6",
+    isVeg: true,
+    isPopular: true,
+  },
+  {
+    id: "item-12",
+    name: "Chicken 65",
+    description: "Spicy, deep-fried chicken starter marinated in a vibrant red spice mix.",
+    price: 180,
+    image: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=300&h=300&q=80",
+    category: "cat-2",
+    isVeg: false,
+    isPopular: true,
+    spicyLevel: 3,
   }
 ];
 
@@ -177,6 +219,7 @@ export const offers: Offer[] = [
     description: "On all main course items",
     discount: "20%",
     code: "MALABAR20",
+    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=300&h=300&q=80",
   },
   {
     id: "off-2",
@@ -184,6 +227,7 @@ export const offers: Offer[] = [
     description: "On orders above ₹1000",
     discount: "Free",
     code: "SWEETREAT",
+    image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=300&h=300&q=80",
   }
 ];
 
@@ -210,5 +254,6 @@ export const reviews: Review[] = [
     rating: 5,
     date: "2 weeks ago",
     comment: "Absolutely love the Appam and stew combo. Fast service and very clean place.",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80",
   }
 ];
