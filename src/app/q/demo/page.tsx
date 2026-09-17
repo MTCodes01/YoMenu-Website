@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { 
@@ -11,7 +11,9 @@ import {
   Clock,
   Phone,
   Star,
-  Building2
+  Building2,
+  Menu,
+  X
 } from "lucide-react";
 import { 
   restaurantData, 
@@ -59,15 +61,30 @@ export default function CustomerMenuPage() {
   const [dietaryFilter, setDietaryFilter] = useState<"all" | "veg" | "non-veg">("all");
   const [userRating, setUserRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
+  
+  const [showFloatingCategoryBtn, setShowFloatingCategoryBtn] = useState(false);
+  const [showCategoryPopup, setShowCategoryPopup] = useState(false);
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (activeView !== "menu" || !categoryScrollRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowFloatingCategoryBtn(!entry.isIntersecting);
+        if (entry.isIntersecting) {
+          setShowCategoryPopup(false);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(categoryScrollRef.current);
+    return () => observer.disconnect();
+  }, [activeView]);
 
   const categories = [{ id: "All", name: "All" }, ...menuCategories];
 
   // Filtering
   let filteredItems = menuItems;
-  
-  if (activeCategory !== "All") {
-    filteredItems = filteredItems.filter(item => item.category === activeCategory);
-  }
 
   if (searchQuery) {
     filteredItems = filteredItems.filter(item => 
@@ -122,11 +139,22 @@ export default function CustomerMenuPage() {
       </div>
 
       {/* Category Chips (Wrapping) */}
-      <div className="px-5 flex flex-wrap gap-2.5 mb-5">
+      <div ref={categoryScrollRef} className="px-5 flex flex-wrap gap-2.5 mb-5">
         {categories.map(cat => (
           <button
             key={cat.id}
-            onClick={() => setActiveCategory(cat.id)}
+            onClick={() => {
+              setActiveCategory(cat.id);
+              if (cat.id === "All") {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              } else {
+                const el = document.getElementById(`category-${cat.id}`);
+                if (el) {
+                  const y = el.getBoundingClientRect().top + window.scrollY - 30;
+                  window.scrollTo({ top: y, behavior: 'smooth' });
+                }
+              }
+            }}
             className={`px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 border ${
               activeCategory === cat.id 
                 ? "bg-orange-600 text-white border-orange-600 shadow-md shadow-orange-600/25 scale-[1.02]" 
@@ -161,51 +189,64 @@ export default function CustomerMenuPage() {
         <span>{filteredItems.length} items</span>
       </div>
 
-      {/* Item List (Grid Cards) */}
-      <div className="px-5 grid grid-cols-2 gap-4">
+      {/* Item List (Grouped by Category) */}
+      <div className="px-5 flex flex-col gap-10">
         {filteredItems.length > 0 ? (
-          filteredItems.map(item => (
-            <div key={item.id} className="border border-gray-100 rounded-[12px] p-3 flex flex-col gap-3 bg-white shadow-sm hover:shadow-lg hover:border-orange-100 transition-all duration-300 group">
-              <div className="relative w-full aspect-square rounded-[9px] overflow-hidden bg-gray-50 shadow-sm border border-gray-100">
-                <Image 
-                  src={item.image}
-                  alt={item.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                {item.isPopular && (
-                  <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-white bg-orange-600 text-[9px] leading-tight font-bold tracking-wide shadow-sm uppercase">
-                    Popular
-                  </span>
-                )}
-              </div>
-              <div className="flex flex-col flex-1">
-                {/* Dietary Indicator */}
-                <div className="flex mb-1">
-                  {item.isVeg ? (
-                    <div className="flex items-center gap-1 bg-green-50 px-1.5 py-0.5 rounded text-[9px] font-bold text-green-700 border border-green-100 uppercase tracking-wider">
-                      Veg
+          categories.filter(c => c.id !== "All").map(cat => {
+            const catItems = filteredItems.filter(item => item.category === cat.id);
+            if (catItems.length === 0) return null;
+            
+            return (
+              <div key={cat.id} id={`category-${cat.id}`} className="scroll-mt-8">
+                <h2 className="text-[19px] font-extrabold text-gray-900 mb-4 tracking-tight">{cat.name}</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  {catItems.map(item => (
+                    <div key={item.id} className="border border-gray-100 rounded-[12px] p-3 flex flex-col gap-3 bg-white shadow-sm hover:shadow-lg hover:border-orange-100 transition-all duration-300 group">
+                      <div className="relative w-full aspect-square rounded-[12px] overflow-hidden bg-gray-50 shadow-sm border border-gray-100">
+                        <Image 
+                          src={item.image}
+                          alt={item.name}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        {item.isPopular && (
+                          <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-white bg-orange-600 text-[9px] leading-tight font-bold tracking-wide shadow-sm uppercase">
+                            Popular
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-col flex-1">
+                        {/* Dietary Indicator */}
+                        <div className="flex mb-1">
+                          {item.isVeg ? (
+                            <div className="flex items-center gap-1 bg-green-50 px-1.5 py-0.5 rounded text-[9px] font-bold text-green-700 border border-green-100 uppercase tracking-wider">
+                              Veg
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded text-[9px] font-bold text-red-700 border border-red-100 uppercase tracking-wider">
+                              Non-Veg
+                            </div>
+                          )}
+                        </div>
+                        <h3 className="text-[14px] font-bold text-gray-900 mb-1 leading-tight group-hover:text-orange-600 transition-colors line-clamp-2">{item.name}</h3>
+                        <div className="text-[15px] font-extrabold text-orange-600 tabular-nums mt-auto">
+                          {restaurantData.currencySymbol}{item.price}
+                        </div>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-1 bg-red-50 px-1.5 py-0.5 rounded text-[9px] font-bold text-red-700 border border-red-100 uppercase tracking-wider">
-                      Non-Veg
-                    </div>
-                  )}
-                </div>
-                <h3 className="text-[14px] font-bold text-gray-900 mb-1 leading-tight group-hover:text-orange-600 transition-colors line-clamp-2">{item.name}</h3>
-                <div className="text-[15px] font-extrabold text-orange-600 tabular-nums mt-auto">
-                  {restaurantData.currencySymbol}{item.price}
+                  ))}
                 </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
-          <div className="col-span-2 text-center py-16 text-gray-400 text-sm flex flex-col items-center">
+          <div className="text-center py-16 text-gray-400 text-sm flex flex-col items-center">
             <Search className="w-8 h-8 mb-3 opacity-20" />
             No items found matching your filters.
           </div>
         )}
       </div>
+
         </>
       ) : (
         <div className="px-5 mt-4 space-y-6">
@@ -309,7 +350,8 @@ export default function CustomerMenuPage() {
       </div>
 
       {/* Futuristic Floating Bottom Nav */}
-      <div className="sticky bottom-6 w-full flex justify-center z-50 mt-4 pointer-events-none">
+      {/* Futuristic Floating Bottom Nav */}
+      <div className="sticky bottom-6 w-full flex justify-center z-50 mt-4 pointer-events-none relative">
         <nav className="flex items-center p-1.5 bg-black/85 backdrop-blur-xl rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/15 supports-[backdrop-filter]:bg-black/60 relative w-[220px] pointer-events-auto">
           {/* Sliding Indicator */}
           <div 
@@ -340,6 +382,49 @@ export default function CustomerMenuPage() {
             <span className="text-[11px] font-bold tracking-wider uppercase">About</span>
           </button>
         </nav>
+
+        {/* Floating Category Menu Button */}
+        {activeView === "menu" && showFloatingCategoryBtn && (
+          <div className="absolute right-5 bottom-0 pointer-events-auto z-40 flex flex-col items-end">
+            {/* Popup Menu */}
+            {showCategoryPopup && (
+              <div className="mb-4 w-48 bg-black/85 backdrop-blur-xl supports-[backdrop-filter]:bg-black/60 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.4)] border border-white/15 overflow-hidden flex flex-col py-2 animate-in slide-in-from-bottom-2 fade-in duration-200 origin-bottom-right">
+                {categories.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                      setActiveCategory(cat.id);
+                      setShowCategoryPopup(false);
+                      if (cat.id === "All") {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      } else {
+                        const el = document.getElementById(`category-${cat.id}`);
+                        if (el) {
+                          const y = el.getBoundingClientRect().top + window.scrollY - 30;
+                          window.scrollTo({ top: y, behavior: 'smooth' });
+                        }
+                      }
+                    }}
+                    className={`px-4 py-2.5 text-sm text-left transition-colors font-medium ${
+                      activeCategory === cat.id
+                        ? "bg-white/20 text-white"
+                        : "text-white/70 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            <button
+              onClick={() => setShowCategoryPopup(!showCategoryPopup)}
+              className="w-12 h-12 bg-black/85 backdrop-blur-xl supports-[backdrop-filter]:bg-black/60 text-white rounded-full flex items-center justify-center shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:bg-black transition-all active:scale-95 border border-white/15"
+            >
+              {showCategoryPopup ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
