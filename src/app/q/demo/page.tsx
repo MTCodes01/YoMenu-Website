@@ -93,12 +93,12 @@ export default function CustomerMenuPage() {
         </div>
         <div className="flex gap-2">
           {restaurantData.instagram && (
-            <a href={restaurantData.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full text-gray-600 hover:text-pink-600 hover:bg-pink-50 transition-colors">
+            <a href={restaurantData.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full text-pink-600 hover:bg-pink-50 transition-colors">
               <InstagramIcon className="w-5 h-5" />
             </a>
           )}
           {restaurantData.whatsapp && (
-            <a href={`https://wa.me/${restaurantData.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full text-gray-600 hover:text-green-600 hover:bg-green-50 transition-colors">
+            <a href={`https://wa.me/${restaurantData.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full text-green-600 hover:bg-green-50 transition-colors">
               <WhatsAppIcon className="w-5 h-5" />
             </a>
           )}
