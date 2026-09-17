@@ -215,7 +215,7 @@ export default function CustomerMenuPage() {
         </>
       ) : (
         <div className="px-5 mt-4 space-y-6">
-          <div className="relative w-full h-48 rounded-[28px] overflow-hidden shadow-sm">
+          <div className="relative w-full h-48 rounded-[12px] overflow-hidden shadow-sm">
             <Image
               src={restaurantData.coverImage}
               alt="Restaurant Cover"
@@ -224,7 +224,7 @@ export default function CustomerMenuPage() {
             />
           </div>
 
-          <div className="bg-white border border-gray-100 rounded-[28px] p-5 shadow-sm space-y-4">
+          <div className="bg-white border border-gray-100 rounded-[12px] p-5 shadow-sm space-y-4">
             <div className="flex items-start gap-3">
               <Clock className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
               <div>
@@ -245,7 +245,7 @@ export default function CustomerMenuPage() {
           </div>
 
           {restaurantData.branches && restaurantData.branches.length > 0 && (
-            <div className="bg-white border border-gray-100 rounded-[28px] p-5 shadow-sm space-y-4">
+            <div className="bg-white border border-gray-100 rounded-[12px] p-5 shadow-sm space-y-4">
               <div className="flex items-center gap-2 mb-2">
                 <Building2 className="w-5 h-5 text-orange-600" />
                 <h4 className="text-[17px] font-bold text-gray-900">Our Branches</h4>
@@ -261,7 +261,7 @@ export default function CustomerMenuPage() {
             </div>
           )}
 
-          <div className="bg-white border border-gray-100 rounded-[28px] p-5 shadow-sm">
+          <div className="bg-white border border-gray-100 rounded-[12px] p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <Star className="w-5 h-5 text-orange-400 fill-orange-400" />
               <h4 className="text-[17px] font-bold text-gray-900">{restaurantData.rating} ({restaurantData.reviewsCount} reviews)</h4>
@@ -315,30 +315,38 @@ export default function CustomerMenuPage() {
       </div>
 
       {/* Futuristic Floating Bottom Nav */}
-      <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 p-1.5 bg-black/85 backdrop-blur-xl rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/15 supports-[backdrop-filter]:bg-black/60">
-        <button 
-          onClick={() => setActiveView("menu")}
-          className={`flex items-center justify-center gap-2.5 py-2.5 px-6 rounded-full transition-all duration-300 active:scale-95 ${
-            activeView === "menu" 
-              ? "bg-white/20 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:bg-white/30" 
-              : "text-white/60 hover:text-white hover:bg-white/10"
-          }`}
-        >
-          <MenuSquare className="w-4 h-4" />
-          <span className="text-[11px] font-bold tracking-wider uppercase">Menu</span>
-        </button>
-        <button 
-          onClick={() => setActiveView("about")}
-          className={`flex items-center justify-center gap-2.5 py-2.5 px-6 rounded-full transition-all duration-300 active:scale-95 ${
-            activeView === "about" 
-              ? "bg-white/20 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:bg-white/30" 
-              : "text-white/60 hover:text-white hover:bg-white/10"
-          }`}
-        >
-          <Store className="w-4 h-4" />
-          <span className="text-[11px] font-bold tracking-wider uppercase">About</span>
-        </button>
-      </nav>
+      <div className="sticky bottom-6 w-full flex justify-center z-50 mt-4 pointer-events-none">
+        <nav className="flex items-center p-1.5 bg-black/85 backdrop-blur-xl rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.4)] border border-white/15 supports-[backdrop-filter]:bg-black/60 relative w-[220px] pointer-events-auto">
+          {/* Sliding Indicator */}
+          <div 
+            className={`absolute left-1.5 top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-white/20 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+              activeView === 'about' ? 'translate-x-full' : 'translate-x-0'
+            }`}
+          />
+          <button 
+            onClick={() => setActiveView("menu")}
+            className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full transition-colors duration-300 active:scale-95 ${
+              activeView === "menu" 
+                ? "text-white" 
+                : "text-white/60 hover:text-white"
+            }`}
+          >
+            <MenuSquare className="w-4 h-4" />
+            <span className="text-[11px] font-bold tracking-wider uppercase">Menu</span>
+          </button>
+          <button 
+            onClick={() => setActiveView("about")}
+            className={`relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 rounded-full transition-colors duration-300 active:scale-95 ${
+              activeView === "about" 
+                ? "text-white" 
+                : "text-white/60 hover:text-white"
+            }`}
+          >
+            <Store className="w-4 h-4" />
+            <span className="text-[11px] font-bold tracking-wider uppercase">About</span>
+          </button>
+        </nav>
+      </div>
     </div>
   );
 }
