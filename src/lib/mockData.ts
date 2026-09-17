@@ -30,6 +30,9 @@ export type RestaurantInfo = {
   currency: string;
   currencySymbol: string;
   phone: string;
+  instagram?: string;
+  whatsapp?: string;
+  branches?: { name: string; address: string }[];
 };
 
 export type Offer = {
@@ -63,7 +66,13 @@ export const restaurantData: RestaurantInfo = {
   openUntil: "10:30 PM",
   currency: "INR",
   currencySymbol: "₹",
-  phone: "+91 98765 43210"
+  phone: "+919876543210",
+  instagram: "https://instagram.com/malabartable",
+  whatsapp: "+919876543210",
+  branches: [
+    { name: "Kochi Branch", address: "456 Marine Drive, Kochi 682031" },
+    { name: "Calicut Branch", address: "789 Beach Road, Calicut 673032" }
+  ]
 };
 
 export const menuCategories: MenuCategory[] = [
