@@ -442,7 +442,7 @@ export default function CustomerMenuPage() {
                     }`}
                   >
                     <span>{cat.name}</span>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${activeCategory === cat.id ? 'bg-white/20 text-white' : 'bg-white/10 text-white/50'}`}>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-orange-600 text-white shadow-sm">
                       {cat.id === "All" ? menuItems.length : menuItems.filter(item => item.category === cat.id).length}
                     </span>
                   </button>
