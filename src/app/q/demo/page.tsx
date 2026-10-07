@@ -398,7 +398,10 @@ export default function CustomerMenuPage() {
             }`}
           >
             <MenuSquare className="w-4 h-4" />
-            <span className="text-[11px] font-bold tracking-wider uppercase">Menu</span>
+            <span className="text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5">
+              Menu
+              <span className="bg-white/20 text-[9px] px-1.5 py-0.5 rounded-full font-black leading-none">{menuItems.length}</span>
+            </span>
           </button>
           <button 
             onClick={() => setActiveView("about")}
