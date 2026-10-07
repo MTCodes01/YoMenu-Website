@@ -398,10 +398,7 @@ export default function CustomerMenuPage() {
             }`}
           >
             <MenuSquare className="w-4 h-4" />
-            <span className="text-[11px] font-bold tracking-wider uppercase flex items-center gap-1.5">
-              Menu
-              <span className="bg-white/20 text-[9px] px-1.5 py-0.5 rounded-full font-black leading-none">{menuItems.length}</span>
-            </span>
+            <span className="text-[11px] font-bold tracking-wider uppercase">Menu</span>
           </button>
           <button 
             onClick={() => setActiveView("about")}
@@ -452,9 +449,16 @@ export default function CustomerMenuPage() {
             
             <button
               onClick={() => setShowCategoryPopup(!showCategoryPopup)}
-              className="w-12 h-12 bg-black/85 backdrop-blur-xl supports-[backdrop-filter]:bg-black/60 text-white rounded-full flex items-center justify-center shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:bg-black transition-all active:scale-95 border border-white/15"
+              className="relative w-12 h-12 bg-black/85 backdrop-blur-xl supports-[backdrop-filter]:bg-black/60 text-white rounded-full flex items-center justify-center shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:bg-black transition-all active:scale-95 border border-white/15"
             >
               {showCategoryPopup ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              
+              {/* Badge for total items */}
+              {!showCategoryPopup && (
+                <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-[9px] font-black px-1.5 min-w-[20px] h-[20px] rounded-full flex items-center justify-center border-2 border-black/85 shadow-sm">
+                  {menuItems.length}
+                </span>
+              )}
             </button>
           </div>
         )}
