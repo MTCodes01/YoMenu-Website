@@ -20,7 +20,7 @@ export default function DashboardPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Overview</h1>
-          <p className="text-muted-foreground mt-1">Here's what's happening at your restaurant today.</p>
+          <p className="text-muted-foreground mt-1">Here&apos;s what&apos;s happening at your restaurant today.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline">

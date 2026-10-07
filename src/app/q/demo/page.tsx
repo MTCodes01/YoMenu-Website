@@ -138,8 +138,38 @@ export default function CustomerMenuPage() {
         </div>
       </div>
 
-      {/* Category Chips (Wrapping) */}
-      <div ref={categoryScrollRef} className="px-5 flex flex-wrap gap-2.5 mb-5">
+      {/* Notices */}
+      <div className="px-5 mb-6">
+        <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] snap-x pb-2">
+          <div className="min-w-[85%] snap-center shrink-0 bg-gradient-to-r from-orange-100 to-orange-50 border border-orange-200 rounded-xl p-4 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-orange-200 rounded-full opacity-50 -mr-8 -mt-8"></div>
+            <h4 className="text-orange-800 font-bold text-sm mb-1 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-orange-600 animate-pulse"></span>
+              Special Offer
+            </h4>
+            <p className="text-orange-700 text-xs font-medium">Get 20% off on all main courses this weekend. Use code WEEKEND20.</p>
+          </div>
+          <div className="min-w-[85%] snap-center shrink-0 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 rounded-xl p-4 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-blue-200 rounded-full opacity-50 -mr-8 -mt-8"></div>
+            <h4 className="text-blue-800 font-bold text-sm mb-1 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+              New Arrival
+            </h4>
+            <p className="text-blue-700 text-xs font-medium">Try our new Chef&apos;s Special Truffle Pasta, now available!</p>
+          </div>
+          <div className="min-w-[85%] snap-center shrink-0 bg-gradient-to-r from-green-100 to-green-50 border border-green-200 rounded-xl p-4 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-16 h-16 bg-green-200 rounded-full opacity-50 -mr-8 -mt-8"></div>
+            <h4 className="text-green-800 font-bold text-sm mb-1 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-green-600 animate-pulse"></span>
+              Live Music
+            </h4>
+            <p className="text-green-700 text-xs font-medium">Join us for live acoustic music every Friday evening.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Category Chips (Horizontal Scroll) */}
+      <div ref={categoryScrollRef} className="px-5 flex gap-2.5 mb-5 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-2">
         {categories.map(cat => (
           <button
             key={cat.id}
@@ -155,7 +185,7 @@ export default function CustomerMenuPage() {
                 }
               }
             }}
-            className={`px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 border ${
+            className={`px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 border whitespace-nowrap shrink-0 ${
               activeCategory === cat.id 
                 ? "bg-orange-600 text-white border-orange-600 shadow-md shadow-orange-600/25 scale-[1.02]" 
                 : "bg-white text-gray-600 border-gray-200 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
