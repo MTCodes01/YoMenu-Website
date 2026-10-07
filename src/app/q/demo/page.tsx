@@ -435,13 +435,16 @@ export default function CustomerMenuPage() {
                         }
                       }
                     }}
-                    className={`px-4 py-2.5 text-sm text-left transition-colors font-medium ${
+                    className={`px-4 py-2.5 text-sm text-left transition-colors font-medium flex justify-between items-center ${
                       activeCategory === cat.id
                         ? "bg-white/20 text-white"
                         : "text-white/70 hover:bg-white/10 hover:text-white"
                     }`}
                   >
-                    {cat.name}
+                    <span>{cat.name}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${activeCategory === cat.id ? 'bg-white/20 text-white' : 'bg-white/10 text-white/50'}`}>
+                      {cat.id === "All" ? menuItems.length : menuItems.filter(item => item.category === cat.id).length}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -449,16 +452,9 @@ export default function CustomerMenuPage() {
             
             <button
               onClick={() => setShowCategoryPopup(!showCategoryPopup)}
-              className="relative w-12 h-12 bg-black/85 backdrop-blur-xl supports-[backdrop-filter]:bg-black/60 text-white rounded-full flex items-center justify-center shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:bg-black transition-all active:scale-95 border border-white/15"
+              className="w-12 h-12 bg-black/85 backdrop-blur-xl supports-[backdrop-filter]:bg-black/60 text-white rounded-full flex items-center justify-center shadow-[0_8px_32px_rgba(0,0,0,0.4)] hover:bg-black transition-all active:scale-95 border border-white/15"
             >
               {showCategoryPopup ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              
-              {/* Badge for total items */}
-              {!showCategoryPopup && (
-                <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-[9px] font-black px-1.5 min-w-[20px] h-[20px] rounded-full flex items-center justify-center border-2 border-black/85 shadow-sm">
-                  {menuItems.length}
-                </span>
-              )}
             </button>
           </div>
         )}
