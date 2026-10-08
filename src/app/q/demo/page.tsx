@@ -66,6 +66,33 @@ export default function CustomerMenuPage() {
   const [showCategoryPopup, setShowCategoryPopup] = useState(false);
   const categoryScrollRef = useRef<HTMLDivElement>(null);
 
+  // Dynamic Data States
+  const [dbRestaurant, setDbRestaurant] = useState(restaurantData);
+  const [dbCategories, setDbCategories] = useState(menuCategories);
+  const [dbItems, setDbItems] = useState(menuItems);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const { getRestaurant, getMenuCategories, getMenuItems } = await import("@/lib/api");
+        const restId = "6e26cf81-f09b-4f9f-a2e6-76cd3c5c56d7"; // Malabar Table ID
+        
+        const [rData, cData, iData] = await Promise.all([
+          getRestaurant(restId),
+          getMenuCategories(restId),
+          getMenuItems(restId)
+        ]);
+
+        if (rData) setDbRestaurant(rData);
+        if (cData.length > 0) setDbCategories(cData);
+        if (iData.length > 0) setDbItems(iData);
+      } catch (err) {
+        console.error("Failed to fetch from Supabase, falling back to mockData", err);
+      }
+    }
+    loadData();
+  }, []);
+
   useEffect(() => {
     if (activeView !== "menu" || !categoryScrollRef.current) return;
     const observer = new IntersectionObserver(
@@ -81,10 +108,10 @@ export default function CustomerMenuPage() {
     return () => observer.disconnect();
   }, [activeView]);
 
-  const categories = [{ id: "All", name: "All" }, ...menuCategories];
+  const categories = [{ id: "All", name: "All" }, ...dbCategories];
 
   // Filtering
-  let filteredItems = menuItems;
+  let filteredItems = dbItems;
 
   if (searchQuery) {
     filteredItems = filteredItems.filter(item => 
@@ -94,9 +121,9 @@ export default function CustomerMenuPage() {
   }
 
   if (dietaryFilter === "veg") {
-    filteredItems = filteredItems.filter(item => item.isVeg);
+    filteredItems = filteredItems.filter(item => item.isVeg || item.is_veg);
   } else if (dietaryFilter === "non-veg") {
-    filteredItems = filteredItems.filter(item => !item.isVeg);
+    filteredItems = filteredItems.filter(item => !(item.isVeg || item.is_veg));
   }
 
   return (
@@ -105,17 +132,17 @@ export default function CustomerMenuPage() {
       {/* Header */}
       <div className="pt-8 px-5 pb-2 flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">{restaurantData.name}</h1>
-          <p className="text-sm text-gray-500 mt-1 font-medium">{restaurantData.description}</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">{dbRestaurant.name}</h1>
+          <p className="text-sm text-gray-500 mt-1 font-medium">{dbRestaurant.description}</p>
         </div>
         <div className="flex gap-2">
-          {restaurantData.instagram && (
-            <a href={restaurantData.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full text-pink-600 hover:bg-pink-50 transition-colors">
+          {dbRestaurant.instagram && (
+            <a href={dbRestaurant.instagram} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full text-pink-600 hover:bg-pink-50 transition-colors">
               <InstagramIcon className="w-5 h-5" />
             </a>
           )}
-          {restaurantData.whatsapp && (
-            <a href={`https://wa.me/${restaurantData.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full text-green-600 hover:bg-green-50 transition-colors">
+          {dbRestaurant.whatsapp && (
+            <a href={`https://wa.me/${dbRestaurant.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-50 rounded-full text-green-600 hover:bg-green-50 transition-colors">
               <WhatsAppIcon className="w-5 h-5" />
             </a>
           )}
@@ -223,7 +250,7 @@ export default function CustomerMenuPage() {
       <div className="px-5 flex flex-col gap-10">
         {filteredItems.length > 0 ? (
           categories.filter(c => c.id !== "All").map(cat => {
-            const catItems = filteredItems.filter(item => item.category === cat.id);
+            const catItems = filteredItems.filter(item => item.category === cat.id || item.category_id === cat.id);
             if (catItems.length === 0) return null;
             
             return (
@@ -239,7 +266,7 @@ export default function CustomerMenuPage() {
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
                         />
-                        {item.isPopular && (
+                        {(item.isPopular || item.is_popular) && (
                           <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md text-white bg-orange-600 text-[9px] leading-tight font-bold tracking-wide shadow-sm uppercase">
                             Popular
                           </span>
@@ -248,7 +275,7 @@ export default function CustomerMenuPage() {
                       <div className="flex flex-col flex-1">
                         {/* Dietary Indicator */}
                         <div className="flex mb-1">
-                          {item.isVeg ? (
+                          {(item.isVeg || item.is_veg) ? (
                             <div className="flex items-center gap-1 bg-green-50 px-1.5 py-0.5 rounded text-[9px] font-bold text-green-700 border border-green-100 uppercase tracking-wider">
                               Veg
                             </div>
@@ -260,7 +287,7 @@ export default function CustomerMenuPage() {
                         </div>
                         <h3 className="text-[14px] font-bold text-gray-900 mb-1 leading-tight group-hover:text-orange-600 transition-colors line-clamp-2">{item.name}</h3>
                         <div className="text-[15px] font-extrabold text-orange-600 tabular-nums mt-auto">
-                          {restaurantData.currencySymbol}{item.price}
+                          {dbRestaurant.currencySymbol || '₹'}{item.price}
                         </div>
                       </div>
                     </div>
@@ -282,7 +309,7 @@ export default function CustomerMenuPage() {
         <div className="px-5 mt-4 space-y-6">
           <div className="relative w-full h-48 rounded-[12px] overflow-hidden shadow-sm">
             <Image
-              src={restaurantData.coverImage}
+              src={dbRestaurant.coverImage || dbRestaurant.cover_image || "https://images.unsplash.com/photo-1601050690597-df0568f70950"}
               alt="Restaurant Cover"
               fill
               className="object-cover"
@@ -294,7 +321,7 @@ export default function CustomerMenuPage() {
               <Clock className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
               <div>
                 <h4 className="text-sm font-bold text-gray-900 mb-1">Hours</h4>
-                <p className="text-sm text-gray-500">Open until {restaurantData.openUntil}</p>
+                <p className="text-sm text-gray-500">Open until {dbRestaurant.openUntil || dbRestaurant.open_until || "10:30 PM"}</p>
               </div>
             </div>
 
@@ -304,19 +331,19 @@ export default function CustomerMenuPage() {
               <Phone className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
               <div>
                 <h4 className="text-sm font-bold text-gray-900 mb-1">Contact</h4>
-                <a href={`tel:${restaurantData.phone}`} className="text-sm text-gray-500 hover:text-orange-600 transition-colors">{restaurantData.phone}</a>
+                <a href={`tel:${dbRestaurant.phone}`} className="text-sm text-gray-500 hover:text-orange-600 transition-colors">{dbRestaurant.phone}</a>
               </div>
             </div>
           </div>
 
-          {restaurantData.branches && restaurantData.branches.length > 0 && (
+          {dbRestaurant.branches && dbRestaurant.branches.length > 0 && (
             <div className="bg-white border border-gray-100 rounded-[12px] p-5 shadow-sm space-y-4">
               <div className="flex items-center gap-2 mb-2">
                 <Building2 className="w-5 h-5 text-orange-600" />
                 <h4 className="text-[17px] font-bold text-gray-900">Our Branches</h4>
               </div>
               <div className="space-y-3">
-                {restaurantData.branches.map((branch, idx) => (
+                {dbRestaurant.branches.map((branch: any, idx: number) => (
                   <div key={idx} className="border-l-2 border-orange-200 pl-3">
                     <h5 className="text-sm font-bold text-gray-900">{branch.name}</h5>
                     <p className="text-sm text-gray-500 leading-relaxed mt-0.5">{branch.address}</p>
@@ -329,7 +356,7 @@ export default function CustomerMenuPage() {
           <div className="bg-white border border-gray-100 rounded-[12px] p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <Star className="w-5 h-5 text-orange-400 fill-orange-400" />
-              <h4 className="text-[17px] font-bold text-gray-900">{restaurantData.rating} ({restaurantData.reviewsCount} reviews)</h4>
+              <h4 className="text-[17px] font-bold text-gray-900">{dbRestaurant.rating} ({dbRestaurant.reviewsCount || dbRestaurant.reviews_count || 0} reviews)</h4>
             </div>
             
             <div className="space-y-4">
@@ -443,7 +470,7 @@ export default function CustomerMenuPage() {
                   >
                     <span>{cat.name}</span>
                     <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-orange-600 text-white shadow-sm">
-                      {cat.id === "All" ? menuItems.length : menuItems.filter(item => item.category === cat.id).length}
+                      {cat.id === "All" ? dbItems.length : dbItems.filter(item => item.category === cat.id || item.category_id === cat.id).length}
                     </span>
                   </button>
                 ))}

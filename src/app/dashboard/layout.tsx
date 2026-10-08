@@ -54,7 +54,7 @@ export default function DashboardLayout({
               <ShoppingBag className="h-4 w-4" />
               Orders
             </Link>
-            <Link href="#" className="flex items-center gap-3 px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-md font-medium transition-colors">
+            <Link href="/dashboard/menu" className="flex items-center gap-3 px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground rounded-md font-medium transition-colors">
               <MenuSquare className="h-4 w-4" />
               Menu Items
             </Link>
