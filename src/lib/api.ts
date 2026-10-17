@@ -43,7 +43,39 @@ function throwSupabaseError(error: { message?: string; code?: string; details?: 
 export async function getRestaurant(id: string): Promise<RestaurantInfo | null> {
   const { data, error } = await supabase.from('restaurants').select('*').eq('id', id).single();
   if (error) { console.error('Error fetching restaurant:', error); return null; }
-  return data;
+  return {
+    ...data,
+    coverImage: data.cover_image ?? data.coverImage,
+    reviewsCount: data.reviews_count ?? data.reviewsCount,
+    openUntil: data.open_until ?? data.openUntil,
+    currencySymbol: data.currency_symbol ?? data.currencySymbol,
+  };
+}
+
+export async function saveRestaurant(restaurant: Partial<RestaurantInfo>, id: string) {
+  const db: Record<string, unknown> = {};
+  if (restaurant.name !== undefined) db.name = restaurant.name;
+  if (restaurant.description !== undefined) db.description = restaurant.description;
+  if (restaurant.logo !== undefined) db.logo = restaurant.logo;
+  if (restaurant.coverImage !== undefined) db.cover_image = restaurant.coverImage;
+  if (restaurant.location !== undefined) db.location = restaurant.location;
+  if (restaurant.address !== undefined) db.address = restaurant.address;
+  if (restaurant.openUntil !== undefined) db.open_until = restaurant.openUntil;
+  if (restaurant.phone !== undefined) db.phone = restaurant.phone;
+  if (restaurant.whatsapp !== undefined) db.whatsapp = restaurant.whatsapp;
+  if (restaurant.instagram !== undefined) db.instagram = restaurant.instagram;
+  if (restaurant.email !== undefined) db.email = restaurant.email;
+
+  const { error } = await supabase.from('restaurants').update(db).eq('id', id);
+  if (error) {
+    if (error.message?.includes('email') || error.details?.includes('email')) {
+      delete db.email;
+      const { error: retryErr } = await supabase.from('restaurants').update(db).eq('id', id);
+      if (retryErr) throwSupabaseError(retryErr);
+    } else {
+      throwSupabaseError(error);
+    }
+  }
 }
 
 export async function getMenuItems(restaurantId: string): Promise<MenuItem[]> {

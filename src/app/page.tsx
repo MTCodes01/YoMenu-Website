@@ -12,10 +12,10 @@ export default function Home() {
         YoMenu <span className="text-primary font-normal italic">Prototype</span>
       </h1>
       <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-16 font-medium">
-        Your Menu. One Scan Away. Explore the static frontend prototypes for the customer, restaurant, and admin experiences.
+        Your Menu. One Scan Away. Explore the prototypes for the customer menu and admin management experience.
       </p>
 
-      <div className="grid gap-6 md:grid-cols-3 w-full max-w-5xl mx-auto">
+      <div className="grid gap-6 md:grid-cols-2 w-full max-w-4xl mx-auto">
         {/* Customer Menu */}
         <Link href="/q/demo" className="group block h-full">
           <div className="h-full border border-border bg-card p-8 hover:border-primary transition-all text-left flex flex-col">
@@ -32,22 +32,6 @@ export default function Home() {
           </div>
         </Link>
 
-        {/* Restaurant Dashboard */}
-        <Link href="/dashboard" className="group block h-full">
-          <div className="h-full border border-border bg-card p-8 hover:border-primary transition-all text-left flex flex-col">
-            <div className="mb-6">
-              <LayoutDashboard className="h-6 w-6 text-foreground group-hover:text-primary transition-colors" strokeWidth={1.5} />
-            </div>
-            <h2 className="text-xl font-bold mb-3">Restaurant Dashboard</h2>
-            <p className="text-muted-foreground flex-1 mb-8 text-sm leading-relaxed">
-              The control center for restaurant owners to manage orders, menu items, and view metrics.
-            </p>
-            <div className="flex items-center text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
-              View Prototype <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </div>
-        </Link>
-
         {/* Admin Dashboard */}
         <Link href="/admin" className="group block h-full">
           <div className="h-full border border-border bg-card p-8 hover:border-primary transition-all text-left flex flex-col">
@@ -56,7 +40,7 @@ export default function Home() {
             </div>
             <h2 className="text-xl font-bold mb-3">Admin Panel</h2>
             <p className="text-muted-foreground flex-1 mb-8 text-sm leading-relaxed">
-              The platform overview for YoMenu staff to monitor health, restaurants, and overall billing.
+              Manage restaurants, edit menus, update owner contact details, categories, and active offers.
             </p>
             <div className="flex items-center text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
               View Prototype <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
