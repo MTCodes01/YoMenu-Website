@@ -3,12 +3,7 @@
 import React, { useState } from "react";
 import { 
   Building2, 
-  Users, 
-  CreditCard, 
   Activity,
-  ArrowUpRight,
-  MoreVertical,
-  Search,
   ArrowLeft,
   Plus,
   Edit,
@@ -28,7 +23,6 @@ import {
   MenuCategory,
   Offer
 } from "@/lib/mockData";
-import { supabase } from "@/lib/supabase";
 
 export default function AdminPage() {
   const [isManaging, setIsManaging] = useState(false);
@@ -98,14 +92,14 @@ export default function AdminPage() {
       await saveMenuItem(itemForm as MenuItem, restId);
       await loadData();
       setIsItemModalOpen(false);
-    } catch(err) { console.error(err); alert("Failed to save item"); }
+    } catch(err) { console.error(err); alert(`Failed to save item: ${err instanceof Error ? err.message : JSON.stringify(err)}`); }
   };
   const deleteItem = async (id: string) => {
     if (confirm("Delete this item?")) {
       try {
         await deleteMenuItem(id);
         await loadData();
-      } catch(err) { console.error(err); alert("Failed to delete item"); }
+      } catch(err) { console.error(err); alert(`Failed to delete item: ${err instanceof Error ? err.message : JSON.stringify(err)}`); }
     }
   };
 
@@ -121,7 +115,7 @@ export default function AdminPage() {
       await saveMenuCategory(categoryForm as MenuCategory, restId);
       await loadData();
       setIsCategoryModalOpen(false);
-    } catch(err) { console.error(err); alert("Failed to save category"); }
+    } catch(err) { console.error(err); alert(`Failed to save category: ${err instanceof Error ? err.message : JSON.stringify(err)}`); }
   };
   const deleteCategory = async (id: string) => {
     if (confirm("Delete category?")) {
@@ -138,13 +132,13 @@ export default function AdminPage() {
     setOfferForm(offer || { title: "", description: "", discount: "", code: "", image: "" });
     setIsOfferModalOpen(true);
   };
-  const saveOffer = async (e: React.FormEvent) => {
+  const saveOfferHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await saveOffer(offerForm as Offer, restId);
       await loadData();
       setIsOfferModalOpen(false);
-    } catch(err) { console.error(err); alert("Failed to save offer"); }
+    } catch(err) { console.error(err); alert(`Failed to save offer: ${err instanceof Error ? err.message : JSON.stringify(err)}`); }
   };
   const deleteOfferHandler = async (id: string) => {
     if (confirm("Delete offer?")) {
@@ -391,7 +385,7 @@ export default function AdminPage() {
                 <h2 className="font-bold">{editingOffer ? "Edit Offer" : "Add Offer"}</h2>
                 <Button variant="ghost" size="icon" onClick={() => setIsOfferModalOpen(false)} className="h-6 w-6"><X className="h-4 w-4"/></Button>
               </div>
-              <form onSubmit={saveOffer} className="p-4 space-y-4">
+              <form onSubmit={saveOfferHandler} className="p-4 space-y-4">
                 <div>
                   <label className="text-sm font-medium">Title</label>
                   <Input required value={offerForm.title || ""} onChange={e => setOfferForm({...offerForm, title: e.target.value})} />
@@ -429,13 +423,12 @@ export default function AdminPage() {
           <p className="text-muted-foreground mt-1">Monitor the overall health of YoMenu across all restaurants.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline">Export Report</Button>
           <Button>Add Restaurant</Button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2">
         <Card className="shadow-none border-border">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-muted-foreground">Active Restaurants</CardTitle>
@@ -462,47 +455,13 @@ export default function AdminPage() {
             <div className="text-2xl font-bold tabular-nums">12.4K</div>
           </CardContent>
         </Card>
-
-        <Card className="shadow-none border-border">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">MRR</CardTitle>
-            <div className="h-8 w-8 bg-muted rounded-md flex items-center justify-center">
-              <CreditCard className="h-4 w-4 text-foreground" strokeWidth={2} />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold tabular-nums">$99</div>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-none border-border">
-          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Active End Users</CardTitle>
-            <div className="h-8 w-8 bg-muted rounded-md flex items-center justify-center">
-              <Users className="h-4 w-4 text-foreground" strokeWidth={2} />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold tabular-nums">1,240</div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Restaurants Table */}
       <Card className="shadow-none border-border mt-4">
-        <CardHeader className="flex flex-col md:flex-row md:items-center justify-between border-b pb-4 mb-4 gap-4">
-          <div>
-            <CardTitle>Your Restaurants</CardTitle>
-            <CardDescription>Businesses on the YoMenu platform.</CardDescription>
-          </div>
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input 
-              type="search" 
-              placeholder="Search restaurants..." 
-              className="w-full pl-9 h-9 border-muted"
-            />
-          </div>
+        <CardHeader className="border-b pb-4 mb-4">
+          <CardTitle>Your Restaurants</CardTitle>
+          <CardDescription>Businesses on the YoMenu platform.</CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -532,6 +491,19 @@ export default function AdminPage() {
                   <td className="px-6 py-4 text-right">
                     <Button variant="outline" size="sm" onClick={() => setIsManaging(true)}>
                       Manage Data
+                    </Button>
+                  </td>
+                </tr>
+                <tr>
+                  <td colSpan={5} className="px-6 py-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground"
+                      onClick={() => setIsManaging(true)}
+                    >
+                      <Edit className="h-3.5 w-3.5" />
+                      Edit Restaurant
                     </Button>
                   </td>
                 </tr>
