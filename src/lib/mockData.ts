@@ -27,23 +27,31 @@ export type RestaurantInfo = {
   location: string;
   address: string;
   openUntil: string;
+  openHours?: string;
   currency: string;
   currencySymbol: string;
   phone: string;
   email?: string;
   instagram?: string;
   whatsapp?: string;
+  facebook?: string;
+  twitter?: string;
+  youtube?: string;
+  website?: string;
+  mapsUrl?: string;
   branches?: { name: string; address: string }[];
 };
 
-export type Offer = {
+export type Notice = {
   id: string;
   title: string;
   description: string;
-  discount: string;
-  code: string;
   image?: string;
+  discount?: string;
+  code?: string;
 };
+
+export type Offer = Notice;
 
 export type Review = {
   id: string;
@@ -54,8 +62,9 @@ export type Review = {
   avatar?: string;
 };
 
+// --- RESTAURANT 1: Malabar Table ---
 export const restaurantData: RestaurantInfo = {
-  id: "rest-1",
+  id: "6e26cf81-f09b-4f9f-a2e6-76cd3c5c56d7",
   name: "Malabar Table",
   description: "Authentic South Indian & Kerala Cuisine",
   logo: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=150&h=150&q=80",
@@ -65,18 +74,59 @@ export const restaurantData: RestaurantInfo = {
   location: "Trivandrum, Kerala",
   address: "123 MG Road, Near Pattom, Trivandrum 695004",
   openUntil: "10:30 PM",
+  openHours: "11:00 AM - 10:30 PM",
   currency: "INR",
   currencySymbol: "₹",
   phone: "+91 98765 43210",
   email: "contact@malabartable.com",
   instagram: "https://instagram.com/malabartable",
   whatsapp: "+91 98765 43210",
+  facebook: "https://facebook.com/malabartable",
+  twitter: "https://x.com/malabartable",
+  youtube: "https://youtube.com/@malabartable",
+  website: "https://malabartable.com",
+  mapsUrl: "https://maps.google.com/?q=MG+Road+Trivandrum",
   branches: [
     { name: "Kochi Branch", address: "456 Marine Drive, Kochi 682031" },
     { name: "Calicut Branch", address: "789 Beach Road, Calicut 673032" }
   ]
 };
 
+// --- RESTAURANT 2: The Spice Coast Grill ---
+export const restaurantData2: RestaurantInfo = {
+  id: "rest-spice-coast-2",
+  name: "The Spice Coast Grill",
+  description: "Coastal Seafood, Tandoor & Charcoal Barbecue",
+  logo: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=150&h=150&q=80",
+  coverImage: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&h=400&q=80",
+  rating: 4.8,
+  reviewsCount: 312,
+  location: "Kochi, Kerala",
+  address: "456 Marine Drive, Near High Court, Kochi 682031",
+  openUntil: "11:30 PM",
+  openHours: "12:00 PM - 11:30 PM",
+  currency: "INR",
+  currencySymbol: "₹",
+  phone: "+91 98450 12345",
+  email: "contact@spicecoastgrill.com",
+  instagram: "https://instagram.com/spicecoastgrill",
+  whatsapp: "+91 98450 12345",
+  facebook: "https://facebook.com/spicecoastgrill",
+  twitter: "https://x.com/spicecoast",
+  youtube: "https://youtube.com/@spicecoastgrill",
+  website: "https://spicecoastgrill.com",
+  mapsUrl: "https://maps.google.com/?q=Marine+Drive+Kochi",
+  branches: [
+    { name: "Fort Kochi Branch", address: "Princess St, Fort Kochi 682001" }
+  ]
+};
+
+export const initialRestaurantsList: RestaurantInfo[] = [
+  restaurantData,
+  restaurantData2
+];
+
+// --- RESTAURANT 1 CATEGORIES & ITEMS ---
 export const menuCategories: MenuCategory[] = [
   { id: "cat-1", name: "Specials", icon: "✨" },
   { id: "cat-2", name: "Starters", icon: "🥟" },
@@ -172,27 +222,6 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: "item-9",
-    name: "Ghee Roast Dosa",
-    description: "Crispy paper-thin crepe roasted with clarified butter, served with sambar.",
-    price: 110,
-    image: "https://images.unsplash.com/photo-1589301760014-d929f39ce9b1?auto=format&fit=crop&w=300&h=300&q=80",
-    category: "cat-1",
-    isVeg: true,
-    isPopular: true,
-  },
-  {
-    id: "item-10",
-    name: "Fish Curry Meals",
-    description: "Traditional Kerala meals served on a banana leaf with seer fish curry.",
-    price: 220,
-    image: "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=300&h=300&q=80",
-    category: "cat-3",
-    isVeg: false,
-    isPopular: true,
-    spicyLevel: 2,
-  },
-  {
-    id: "item-11",
     name: "Mango Lassi",
     description: "Sweet and creamy yogurt-based drink flavored with fresh ripe mangoes.",
     price: 90,
@@ -200,38 +229,127 @@ export const menuItems: MenuItem[] = [
     category: "cat-6",
     isVeg: true,
     isPopular: true,
-  },
-  {
-    id: "item-12",
-    name: "Chicken 65",
-    description: "Spicy, deep-fried chicken starter marinated in a vibrant red spice mix.",
-    price: 180,
-    image: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=300&h=300&q=80",
-    category: "cat-2",
-    isVeg: false,
-    isPopular: true,
-    spicyLevel: 3,
   }
 ];
 
-export const offers: Offer[] = [
+export const notices1: Notice[] = [
   {
-    id: "off-1",
-    title: "Flat 20% Off",
-    description: "On all main course items",
-    discount: "20%",
-    code: "MALABAR20",
-    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=300&h=300&q=80",
+    id: "not-1",
+    title: "Weekend Kerala Seafood Fest",
+    description: "Special Karimeen Pollichathu and Seer Fish Fry prepared by our Master Chef this Saturday & Sunday.",
+    image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=300&h=300&q=80"
   },
   {
-    id: "off-2",
-    title: "Free Dessert",
-    description: "On orders above ₹1000",
-    discount: "Free",
-    code: "SWEETREAT",
-    image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=300&h=300&q=80",
+    id: "not-2",
+    title: "Live Acoustic Music Nights",
+    description: "Relax with traditional and fusion acoustic music every Friday from 7:30 PM onwards.",
+    image: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=300&h=300&q=80"
   }
 ];
+
+// --- RESTAURANT 2 CATEGORIES & ITEMS ---
+export const menuCategories2: MenuCategory[] = [
+  { id: "sc-cat-1", name: "Chef's Specials", icon: "🔥" },
+  { id: "sc-cat-2", name: "Tandoori Starters", icon: "🍢" },
+  { id: "sc-cat-3", name: "Seafood Curries", icon: "🦐" },
+  { id: "sc-cat-4", name: "Breads & Rice", icon: "🫓" },
+  { id: "sc-cat-5", name: "Sweets & Desserts", icon: "🍨" },
+  { id: "sc-cat-6", name: "Beverages", icon: "🍹" }
+];
+
+export const menuItems2: MenuItem[] = [
+  {
+    id: "sc-item-1",
+    name: "Tandoori King Prawns",
+    description: "Jumbo prawns marinated in ajwain, curd and mustard oil, grilled to smoky perfection.",
+    price: 490,
+    image: "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?auto=format&fit=crop&w=300&h=300&q=80",
+    category: "sc-cat-1",
+    isVeg: false,
+    isPopular: true,
+    spicyLevel: 2
+  },
+  {
+    id: "sc-item-2",
+    name: "Neymeen Fish Fry",
+    description: "Crispy tava-fried Seer Fish slice marinated with shallots, crushed pepper and lemon.",
+    price: 360,
+    image: "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=300&h=300&q=80",
+    category: "sc-cat-2",
+    isVeg: false,
+    isPopular: true,
+    spicyLevel: 3
+  },
+  {
+    id: "sc-item-3",
+    name: "Crab Roast Masala",
+    description: "Fresh mud crabs slow cooked in caramelized onions, green chilies and thick coconut paste.",
+    price: 420,
+    image: "https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=300&h=300&q=80",
+    category: "sc-cat-3",
+    isVeg: false,
+    isPopular: true,
+    spicyLevel: 3
+  },
+  {
+    id: "sc-item-4",
+    name: "Garlic Butter Naan",
+    description: "Leavened oven-baked flatbread brushed with minced roasted garlic and butter.",
+    price: 65,
+    image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=300&h=300&q=80",
+    category: "sc-cat-4",
+    isVeg: true,
+    isPopular: true
+  },
+  {
+    id: "sc-item-5",
+    name: "Elaneer Payasam",
+    description: "Exquisite tender coconut pudding crafted with coconut cream and milk.",
+    price: 160,
+    image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=300&h=300&q=80",
+    category: "sc-cat-5",
+    isVeg: true,
+    isPopular: true
+  },
+  {
+    id: "sc-item-6",
+    name: "Tender Coconut Shake",
+    description: "Creamy shake made with freshly scooped malai and sweet tender coconut water.",
+    price: 110,
+    image: "https://images.unsplash.com/photo-1550461716-ba455913e61c?auto=format&fit=crop&w=300&h=300&q=80",
+    category: "sc-cat-6",
+    isVeg: true,
+    isPopular: true
+  },
+  {
+    id: "sc-item-7",
+    name: "Kulukki Sarbath",
+    description: "Shaken iced lemonade with basil seeds, green chili hint, and crushed pineapple.",
+    price: 70,
+    image: "https://images.unsplash.com/photo-1536935338788-846bb9981813?auto=format&fit=crop&w=300&h=300&q=80",
+    category: "sc-cat-6",
+    isVeg: true,
+    isPopular: false
+  }
+];
+
+export const notices2: Notice[] = [
+  {
+    id: "not-21",
+    title: "Catch of the Day: Live Mud Crabs",
+    description: "Fresh mud crabs and tiger prawns arriving straight from Munambam harbor every afternoon.",
+    image: "https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?auto=format&fit=crop&w=300&h=300&q=80"
+  },
+  {
+    id: "not-22",
+    title: "Sunset Terrace Barbecue",
+    description: "Open-air grilling and coastal breeze on our 2nd floor terrace overlooking Marine Drive.",
+    image: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=300&h=300&q=80"
+  }
+];
+
+// Alias for backwards compatibility
+export const offers: Notice[] = notices1;
 
 export const reviews: Review[] = [
   {
